@@ -6,6 +6,8 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     OAuth = window.OAuth;
 
     this.insertLoginButton = function(){
+        // FIXME: Could we cache the token as a cookie or something, instead of
+        // showing a button always?!
         $('<button>').text('Post Comment').appendTo($('#github_thread'))
             .click(
                 function(evt){
@@ -19,9 +21,17 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
                             });
                             self.repo = self.github.getRepo.apply(self.github, self.getRepoDetails())
                             $(button).replaceWith(self.insertCommentForm())
+                            if ($('#comment-list').length == 0) {
+                                self.repo.getIssues("all")
+                                    .done(self.getIssueByTitle)
+                                    .fail(self.getIssueFail)
+                            }
                         })
                         .fail(function(){
                             $(button).replaceWith(self.insertCommentForm(true))
+                        })
+                        .always(function(){
+                            $('#comment-fail').remove()
                         })
                 });
     }
@@ -105,10 +115,21 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
 
     }
 
+    this.getIssueFail = function(response) {
+        if (JSON.parse(response.__jqXHR.getResponseHeader('X-RateLimit-Remaining')) == 0) {
+            var message = $("<span id='comment-fail'>Hit RateLimit on GitHub. Login to view comments! Wat?!</span>")
+        } else {
+            var message = $("<span id='comment-fail'>Failed to fetch comments from GitHub.</span>")
+        }
+        message.appendTo($('#github_thread'))
+    }
+
     $(document).ready(function(){
         self.github = new Octokit({});
         self.repo = self.github.getRepo.apply(self.github, self.getRepoDetails());
-        self.repo.getIssues("all").then(self.getIssueByTitle);
+        self.repo.getIssues("all")
+            .done(self.getIssueByTitle)
+            .fail(self.getIssueFail)
         self.insertLoginButton();
     });
 
