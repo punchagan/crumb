@@ -10,7 +10,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
             .click(
                 function(evt){
                     var button = evt.target;
-                    OAuth.initialize('WWANKMvsCbVkU_8CmQphyrfhKew');
+                    OAuth.initialize(self.getOAuthKey());
                     OAuth.popup('github', {})
                         .done(function(result){
                             console.log(result);
@@ -28,6 +28,10 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
 
     this.getRepoDetails = function() {
         return [$('#github_thread').attr('data-repo-user'), $('#github_thread').attr('data-repo-name')]
+    }
+
+    this.getOAuthKey = function() {
+        return $('#github_thread').attr('data-oauth-key')
     }
 
     this.insertCommentForm = function(failed) {
