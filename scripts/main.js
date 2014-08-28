@@ -4,7 +4,7 @@
 // except for 'app' ones, which are in a sibling
 // directory.
 requirejs.config({
-    baseUrl: 'scripts',
+    baseUrl: 'https://rawgit.com/punchagan/gitqus/master/scripts',
     paths: {
         jquery: "//code.jquery.com/jquery-1.11.0.min",
         octokit: "https://rawgit.com/punchagan/github/83e4c38e930f0353905ed557ed7ac531c49a96ae/octokit",
