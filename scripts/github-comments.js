@@ -8,7 +8,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     this.insertLoginButton = function(){
         // FIXME: Could we cache the token as a cookie or something, instead of
         // showing a button always?!
-        $('<button>').text('Post Comment').appendTo($('#github_thread'))
+        $('<button>').text('Post Comment').appendTo($('#gitqus_thread'))
             .click(
                 function(evt){
                     var button = evt.target;
@@ -37,11 +37,11 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     }
 
     this.getRepoDetails = function() {
-        return [$('#github_thread').attr('data-repo-user'), $('#github_thread').attr('data-repo-name')]
+        return [$('#gitqus_thread').attr('data-repo-user'), $('#gitqus_thread').attr('data-repo-name')]
     }
 
     this.getOAuthKey = function() {
-        return $('#github_thread').attr('data-oauth-key')
+        return $('#gitqus_thread').attr('data-oauth-key')
     }
 
     this.insertCommentForm = function(failed) {
@@ -59,14 +59,14 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     this.commentOnIssue = function(evt) {
         evt.preventDefault();
         var text = $('#new-comment').val();
-        var issue = $('#github_thread').attr('data-github-issue-number') || 0;
+        var issue = $('#gitqus_thread').attr('data-github-issue-number') || 0;
 
         if (!issue) {
             // Create a new issue.
             self.repo.createIssue(location.pathname)
                 .done(function(issue_data){
                     issue = issue_data.number;
-                    $('#github_thread').attr('data-github-issue-number', issue);
+                    $('#gitqus_thread').attr('data-github-issue-number', issue);
                     self.postComment(issue, text);
                 })
                 .fail(function(data){
@@ -93,10 +93,13 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     }
 
     this.insertIssueComments = function(comments) {
-        var comments_ul = $("<ul id='comment-list'>");
-        $('#github_thread').append(comments_ul);
+        var all_comments = $("<div id='comment-list'>");
+        $('#gitqus_thread').append(all_comments);
         comments.forEach(function(comment){
-            $('<li>').text(comment.body).appendTo(comments_ul);
+            var comment_div = $('<div>').attr('id', comment.id).appendTo(all_comments);
+            $('<img width="50" class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
+            $('<span>').text(comment.created_at).appendTo(comment_div);
+            $('<p>').text(comment.body).appendTo(comment_div);
         });
     }
 
@@ -109,7 +112,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
             issues.nextPage && issues.nextPage().then(self.getIssueByTitle);
         } else {
             var issue = filtered_issues[0];
-            $('#github_thread').attr('data-github-issue-number', issue.number);
+            $('#gitqus_thread').attr('data-github-issue-number', issue.number);
             self.repo.getComments(issue.number).then(self.insertIssueComments);
         }
 
@@ -121,7 +124,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
         } else {
             var message = $("<span id='comment-fail'>Failed to fetch comments from GitHub.</span>")
         }
-        message.appendTo($('#github_thread'))
+        message.appendTo($('#gitqus_thread'))
     }
 
     $(document).ready(function(){
