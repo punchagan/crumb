@@ -98,7 +98,10 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
         comments.forEach(function(comment){
             var comment_div = $('<div>').attr('id', comment.id).appendTo(all_comments);
             $('<img width="50" class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
-            $('<span>').text(comment.created_at).appendTo(comment_div);
+            $('<a>').attr('href', comment.html_url)
+                .text(comment.created_at)
+                .attr('target', '_blank')
+                .appendTo(comment_div);
             $('<p>').text(comment.body).appendTo(comment_div);
         });
     }
