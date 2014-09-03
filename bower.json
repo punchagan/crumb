@@ -6,8 +6,5 @@
     "octokit": "https://raw.githubusercontent.com/punchagan/github/issues/octokit.js",
     "jquery": "~2.1.1",
     "requirejs": "2.1.8"
-  },
-  "resolutions": {
-    "jquery": "~2.1.1"
   }
 }
