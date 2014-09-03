@@ -134,12 +134,17 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
 
     $(document).ready(function(){
         self.github = new Octokit({});
-        self.repo = self.github.getRepo.apply(self.github, self.getRepoDetails());
+        var user = self.getRepoDetails()[0];
+        var repo = self.getRepoDetails()[1];
 
-        self.repo.getIssues("all")
-            .done(self.getIssueByTitle)
-            .fail(self.getIssueFail);
-        self.insertLoginButton();
+        if (user !== undefined && repo !== undefined) {
+            self.repo = self.github.getRepo(user, repo);
+
+            self.repo.getIssues("all")
+                .done(self.getIssueByTitle)
+                .fail(self.getIssueFail);
+            self.insertLoginButton();
+        }
+
     });
-
 });
