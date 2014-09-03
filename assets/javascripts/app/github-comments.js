@@ -4,6 +4,8 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
 
     /* OAuth doesn't work as I expect, with require... */
     OAuth = window.OAuth;
+    /* Octokit doesn't work correctly, when bundling with r.js... */
+    Octokit = Octokit || window.Octokit;
 
     this.insertLoginButton = function(){
         // FIXME: Could we cache the token as a cookie or something, instead of
@@ -133,9 +135,10 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     $(document).ready(function(){
         self.github = new Octokit({});
         self.repo = self.github.getRepo.apply(self.github, self.getRepoDetails());
+
         self.repo.getIssues("all")
             .done(self.getIssueByTitle)
-            .fail(self.getIssueFail)
+            .fail(self.getIssueFail);
         self.insertLoginButton();
     });
 

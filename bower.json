@@ -1,0 +1,10 @@
+{
+  "name": "appname",
+  "version": "0.1.0",
+  "dependencies": {
+    "oauth": "https://raw.githubusercontent.com/oauth-io/oauth-js/0.2.4/dist/oauth.min.js",
+    "octokit": "https://raw.githubusercontent.com/punchagan/github/issues/octokit.js",
+    "jquery":"2.0.3",
+    "requirejs":"2.1.8"
+  }
+}
