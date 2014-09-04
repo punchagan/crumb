@@ -101,13 +101,24 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     }
 
     this._insert_comment = function(comment){
-        var all_comments = $("#comment-list");
-        var comment_div = $('<div>').attr('id', comment.id).appendTo(all_comments);
-        $('<img width="50" class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
-        $('<a>').attr('href', comment.html_url)
-            .text(comment.created_at)
-            .attr('target', '_blank')
-            .appendTo(comment_div);
+        var all_comments = $("#comment-list"),
+            comment_div = $('<div class="gq-comment">').attr('id', comment.id).appendTo(all_comments);
+
+        $('<img class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
+
+        $('<span class="gq-user">').append(
+            $('<a>').attr('href', comment.user.html_url)
+                .text(comment.user.login)
+                .attr('target', '_blank')
+        ).appendTo(comment_div);
+
+
+        $('<span class="gq-timestamp">').append(
+            $('<a>').attr('href', comment.html_url)
+                .text(comment.created_at)
+                .attr('target', '_blank')
+        ).appendTo(comment_div);
+
         $('<p>').text(comment.body).appendTo(comment_div);
     }
 
