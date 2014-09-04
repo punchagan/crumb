@@ -10,7 +10,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     this.insertLoginButton = function(){
         // FIXME: Could we cache the token as a cookie or something, instead of
         // showing a button always?!
-        $('<button>').text('Post Comment').appendTo($('#gitqus_thread'))
+        $('<i class="fa fa-gh-login"></i>').attr('title', 'Login to GitHub & Comment').appendTo($('#gitqus_thread'))
             .click(
                 function(evt){
                     var button = evt.target;
@@ -135,12 +135,31 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
         message.appendTo($('#gitqus_thread'))
     }
 
+    this.loadCss = function(){
+        var src = document.getElementById('gitqus-script').src,
+            basedir = src.substring(0, src.substring(0, src.lastIndexOf('/')).lastIndexOf('/')),
+            css = [basedir, 'stylesheets', 'style.css'].join('/');
+
+        self._add_stylesheet(css);
+    }
+
+    this._add_stylesheet = function(href) {
+        var link = document.createElement('link'),
+            head = document.getElementsByTagName('head')[0];
+
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        link.href = href;
+        head.appendChild(link);
+    }
+
     $(document).ready(function(){
         self.github = new Octokit({});
         var user = self.getRepoDetails()[0];
         var repo = self.getRepoDetails()[1];
 
         if (user !== undefined && repo !== undefined) {
+            self.loadCss();
             self.repo = self.github.getRepo(user, repo);
 
             self.repo.getIssues("all")
