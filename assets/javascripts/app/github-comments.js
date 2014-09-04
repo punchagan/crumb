@@ -87,7 +87,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
                 if (comments_ul.length == 0) {
                     self.insertIssueComments([comment]);
                 } else {
-                    $('<li>').text(comment.body).appendTo(comments_ul);
+                    self._insert_comment(comment);
                 }
                 $('#new-comment').val('');
             })
@@ -97,15 +97,18 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     this.insertIssueComments = function(comments) {
         var all_comments = $("<div id='comment-list'>");
         $('#gitqus_thread').append(all_comments);
-        comments.forEach(function(comment){
-            var comment_div = $('<div>').attr('id', comment.id).appendTo(all_comments);
-            $('<img width="50" class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
-            $('<a>').attr('href', comment.html_url)
-                .text(comment.created_at)
-                .attr('target', '_blank')
-                .appendTo(comment_div);
-            $('<p>').text(comment.body).appendTo(comment_div);
-        });
+        comments.forEach(self._insert_comment);
+    }
+
+    this._insert_comment = function(comment){
+        var all_comments = $("#comment-list");
+        var comment_div = $('<div>').attr('id', comment.id).appendTo(all_comments);
+        $('<img width="50" class="profile-images">').attr('src', comment.user.avatar_url).appendTo(comment_div);
+        $('<a>').attr('href', comment.html_url)
+            .text(comment.created_at)
+            .attr('target', '_blank')
+            .appendTo(comment_div);
+        $('<p>').text(comment.body).appendTo(comment_div);
     }
 
     this.getIssueByTitle = function(issues){
