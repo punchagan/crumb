@@ -28,7 +28,7 @@
 .profile-images {
     float: left;
     width: 45px;
-    margin: 10px;
+    margin-right: 10px;
 }
 
 .gq-comment {
@@ -36,11 +36,29 @@
 }
 
 .gq-user {
-    margin: 10px;
+    margin-right: 10px;
 }
 
 #gitqus_thread {
     width: 96%;
     margin-left: 2%;
     margin-right: 2%;
+}
+
+#gq-login {
+    float: right;
+}
+
+#gq-messages {
+    width: 90%;
+}
+
+#gq-new-comment {
+    height: 120px;
+    width: 90%
+}
+
+#gq-comment-button {
+    margin-right: 10%;
+    float: right;
 }

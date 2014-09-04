@@ -7,10 +7,17 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     /* Octokit doesn't work correctly, when bundling with r.js... */
     Octokit = Octokit || window.Octokit;
 
+    this.insertMessageDiv = function() {
+        $('<div id="gq-messages">').appendTo($('#gitqus_thread'))
+        $('<div id="gq-comment-submit">').appendTo($('#gitqus_thread'))
+    }
+
     this.insertLoginButton = function(){
         // FIXME: Could we cache the token as a cookie or something, instead of
         // showing a button always?!
-        $('<i class="fa fa-gh-login"></i>').attr('title', 'Login to GitHub & Comment').appendTo($('#gitqus_thread'))
+        $('<i id="gq-login" class="fa fa-gh-login"></i>')
+            .attr('title', 'Login to GitHub & Comment')
+            .appendTo($('#gq-messages'))
             .click(
                 function(evt){
                     var button = evt.target;
@@ -22,7 +29,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
                                 token: result.access_token
                             });
                             self.repo = self.github.getRepo.apply(self.github, self.getRepoDetails())
-                            $(button).replaceWith(self.insertCommentForm())
+                            $('#gq-comment-submit').append(self.insertCommentForm())
                             if ($('#comment-list').length == 0) {
                                 self.repo.getIssues("all")
                                     .done(self.getIssueByTitle)
@@ -30,9 +37,10 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
                             }
                         })
                         .fail(function(){
-                            $(button).replaceWith(self.insertCommentForm(true))
+                            $('#gq-comment-submit').append(self.insertCommentForm(true))
                         })
                         .always(function(){
+                            $(button).remove()
                             $('#comment-fail').remove()
                         })
                 });
@@ -49,9 +57,11 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
     this.insertCommentForm = function(failed) {
         failed = failed || false;
         if (!failed) {
-            var form = $('<form>');
-            $('<textarea id="new-comment">').appendTo(form);
-            $('<input type="submit">').appendTo(form).click(self.commentOnIssue);
+            var form = $('<form>')
+            $('<textarea id="gq-new-comment">').appendTo($('<div id="gq-comment-box">').appendTo(form));
+            $('<input type="submit">').appendTo($('<div id="gq-comment-button">').appendTo(form))
+                .click(self.commentOnIssue);
+            form = $('<div id="gq-comment-form">').append(form);
         } else {
             var form = $("<span>Failed to Login. Cannot comment.</span>");
         }
@@ -60,7 +70,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
 
     this.commentOnIssue = function(evt) {
         evt.preventDefault();
-        var text = $('#new-comment').val();
+        var text = $('#gq-new-comment').val();
         var issue = $('#gitqus_thread').attr('data-github-issue-number') || 0;
 
         if (!issue) {
@@ -89,7 +99,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
                 } else {
                     self._insert_comment(comment);
                 }
-                $('#new-comment').val('');
+                $('#gq-new-comment').val('');
             })
             .fail(function(){alert('failed to post comment')});
     }
@@ -176,6 +186,7 @@ define(["jquery", "octokit", "oauth"], function($, Octokit, OAuth) {
             self.repo.getIssues("all")
                 .done(self.getIssueByTitle)
                 .fail(self.getIssueFail);
+            self.insertMessageDiv();
             self.insertLoginButton();
         }
 
