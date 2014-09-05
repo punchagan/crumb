@@ -9,7 +9,8 @@ exports.config = {
     "minify-css",
     "live-reload",
     "bower",
-    "mimosa-coco"
+    "mimosa-coco",
+    "react"
   ],
   "server": {
     "path": "server.co",

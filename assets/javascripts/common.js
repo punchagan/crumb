@@ -7,6 +7,7 @@ requirejs.config({
   paths: {
     jquery: "vendor/jquery/jquery",
     oauth: "vendor/oauth/index",
-    octokit: "vendor/octokit/index"
+    octokit: "vendor/octokit/index",
+    react: "vendor/react/react"
   }
 });
