@@ -1,8 +1,10 @@
 /** @jsx React.DOM */
-define(["react", "octokit"], function(React, Octokit) {
+define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
     var thread_id = 'gitqus-thread';
 
+    /* OAuth doesn't work as correctly, with require... */
+    OAuth = OAuth || window.OAuth;
     /* Octokit doesn't work correctly, when bundling with r.js... */
     var Octokit = Octokit || window.Octokit;
 
@@ -39,10 +41,6 @@ define(["react", "octokit"], function(React, Octokit) {
 
     var CommentContainer = React.createClass({
 
-        handleURLSubmit: function(url) {
-            this.setState({url:url});
-        },
-
         getInitialState: function() {
             var user = this._getRepoUser(), name = this._getRepoName();
             var github = new Octokit({});
@@ -53,7 +51,9 @@ define(["react", "octokit"], function(React, Octokit) {
                 user: user,
                 name: name,
                 repo: repo,
-                github: github
+                github: github,
+                message: '',
+                logged_in: false
             };
         },
 
@@ -63,19 +63,100 @@ define(["react", "octokit"], function(React, Octokit) {
             }
             this._fetchComments();
             var self = this;
-            setInterval(function(){console.log(self);self._fetchComments(self._getIssueNumber())}, self.props.pollInterval);
-        },
-
-        setCommitData: function(commits){
-            this.setState({commits: commits});
+            setInterval(
+                function(){self._fetchComments(self._getIssueNumber())},
+                self.props.pollInterval
+            );
         },
 
         render: function() {
+            var commentForm = (
+                <div id="gq-comment-form">
+                <form>
+                <div id="gq-comment-box">
+                <textarea id="gq-new-comment" />
+                </div>
+                <div id="gq-comment-button">
+                <input type="submit" onClick={this._postComment} />
+                </div>
+                </form>
+                </div>
+            );
             return (
                 <div>
+                <div id="gq-message"> {this.state.message} </div>
+                <i id="gq-login" className="fa fa-gh-login" onClick={this._login}> </i>
+                {this.state.logged_in?commentForm:''}
                 <CommentList comments={this.state.comments} />
                 </div>
             );
+        },
+
+        _postComment: function(evt) {
+            var self = this;
+
+            evt.preventDefault();
+
+            var text = $('#gq-new-comment').val();
+            var issue_number = self._getIssueNumber() || 0;
+
+            if (!issue_number) {
+                // Create a new issue.
+                self.state.repo.createIssue(location.pathname)
+                .then(
+                    // Success method
+                    function(issue_data){
+                        self._setIssueNumber(issue_data.number);
+                        self._createComment(issue_data.number, text);
+                    },
+
+                    // Fail method
+                    function(){
+                        self.setState({message: 'Failed to create a new issue for this page.'});
+                    }
+                );
+            } else {
+                self._createComment(issue_number, text);
+            }
+
+        },
+
+        _createComment: function(issue_number, text) {
+            var self = this;
+            self.state.repo.createComment(issue_number, text)
+            .then(self._commentSuccess, self._commentFail)
+        },
+
+        _commentSuccess: function(){
+            this.setState({message: 'Successfully posted comment!'})
+            $('#gq-new-comment').val('');
+        },
+
+        _commentFail: function(){
+            this.setState({message: 'Failed to post comment!'})
+        },
+
+        _login: function(evt) {
+            var self = this;
+
+            OAuth.initialize(this._getOAuthKey());
+
+            OAuth.popup('github', {})
+            .done(function(result){
+                self.github = new Octokit({
+                    token: result.access_token
+                });
+                self.state.repo = self.github.getRepo(self.state.user, self.state.name);
+                self._fetchComments(self._getIssueNumber());
+                self.setState({message: '', logged_in: true});
+            })
+            .fail(function(){
+                self.setState({message: 'Failed to Login to GitHub. Cannot comment!', logged_in: false});
+            })
+        },
+
+        _getOAuthKey: function() {
+            return document.getElementById(thread_id).getAttribute('data-oauth-key')
         },
 
         _getRepoUser: function() {
@@ -88,6 +169,10 @@ define(["react", "octokit"], function(React, Octokit) {
 
         _getIssueNumber: function(){
             return document.getElementById(thread_id).getAttribute('data-github-issue-number');
+        },
+
+        _setIssueNumber: function(number){
+            return document.getElementById(thread_id).setAttribute('data-github-issue-number', number);
         },
 
         _loadCss: function(){
@@ -110,10 +195,21 @@ define(["react", "octokit"], function(React, Octokit) {
         _fetchComments: function(issue_number) {
             if (!issue_number) {
                 this.state.repo.getIssues("all")
-                .then(this._findIssue)
+                .then(this._findIssue, this._failFindIssue)
             } else {
                 this.state.repo.getComments(issue_number).then(this._updateIssueComments);
             }
+        },
+
+        _failFindIssue: function(response){
+
+            if (JSON.parse(response.__jqXHR.getResponseHeader('X-RateLimit-Remaining')) == 0) {
+                var message = 'Hit RateLimit on GitHub. Login to view comments! Wat?!';
+            } else {
+                var message = 'Failed to fetch comments from GitHub'
+            }
+
+            this.setState({message: message});
         },
 
         _findIssue: function(issues){
@@ -125,7 +221,7 @@ define(["react", "octokit"], function(React, Octokit) {
                 issues.nextPage && issues.nextPage().then(this._findIssue);
             } else {
                 var issue = filtered_issues[0];
-                document.getElementById(thread_id).setAttribute('data-github-issue-number', issue.number);
+                this._setIssueNumber(issue.number);
                 this._fetchComments(issue.number);
             }
         },
