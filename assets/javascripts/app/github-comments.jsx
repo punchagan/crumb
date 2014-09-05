@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
-    var thread_id = 'gitqus-thread';
+    var thread_id = 'crumb-thread';
 
     /* OAuth doesn't work as correctly, with require... */
     OAuth = OAuth || window.OAuth;
@@ -20,14 +20,14 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
         _insertComment: function(comment){
             return (
-                <div className="gq-comment" key={comment.id} id={comment.id}>
-                <img className="gq-profiles" src={comment.user.avatar_url} />
+                <div className="crumb-comment" key={comment.id} id={comment.id}>
+                <img className="crumb-profiles" src={comment.user.avatar_url} />
 
-                <span className="gq-user">
+                <span className="crumb-user">
                 <a href={comment.user.html_url} target="_blank">{comment.user.login}</a>
                 </span>
 
-                <span className="gq-timestamp">
+                <span className="crumb-timestamp">
                 <a href={comment.html_url} target="_blank">{comment.created_at}</a>
                 </span>
 
@@ -71,12 +71,12 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
         render: function() {
             var commentForm = (
-                <div id="gq-comment-form">
+                <div id="crumb-comment-form">
                 <form>
-                <div id="gq-comment-box">
-                <textarea id="gq-new-comment" />
+                <div id="crumb-comment-box">
+                <textarea id="crumb-new-comment" />
                 </div>
-                <div id="gq-comment-button">
+                <div id="crumb-comment-button">
                 <input type="submit" onClick={this._postComment} />
                 </div>
                 </form>
@@ -84,8 +84,8 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
             );
             return (
                 <div>
-                <div id="gq-message"> {this.state.message} </div>
-                <i id="gq-login" className="fa fa-gh-login" onClick={this._login}> </i>
+                <div id="crumb-message"> {this.state.message} </div>
+                <i id="crumb-login" className="fa fa-gh-login" onClick={this._login}> </i>
                 {this.state.logged_in?commentForm:''}
                 <CommentList comments={this.state.comments} />
                 </div>
@@ -97,7 +97,7 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
             evt.preventDefault();
 
-            var text = $('#gq-new-comment').val();
+            var text = $('#crumb-new-comment').val();
             var issue_number = self._getIssueNumber() || 0;
 
             if (!issue_number) {
@@ -129,7 +129,7 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
 
         _commentSuccess: function(){
             this.setState({message: 'Successfully posted comment!'})
-            $('#gq-new-comment').val('');
+            $('#crumb-new-comment').val('');
         },
 
         _commentFail: function(){
@@ -176,7 +176,7 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
         },
 
         _loadCss: function(){
-            var src = document.getElementById('gitqus-script').src,
+            var src = document.getElementById('crumb-script').src,
             basedir = src.substring(0, src.substring(0, src.lastIndexOf('/')).lastIndexOf('/')),
             css = [basedir, 'stylesheets', 'style.css'].join('/');
             this._addStylesheet(css);

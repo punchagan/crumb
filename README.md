@@ -1,9 +1,9 @@
-gitqus
+crumb
 ======
 
 A disqus-like commenting system using GitHub issues
 
-Gitqus uses GitHub OAuth for authenticating users, and letting them post
+Crumb uses GitHub OAuth for authenticating users, and letting them post
 comments.  It uses [oauth.io](https://oauth.io/) to be able to do OAuth2
 authentication on Github from Javascript.
 
@@ -20,11 +20,11 @@ authentication on Github from Javascript.
 
     ```html
 
-    <div id="gitqus-thread" data-oauth-key="{{oauth.io-key}}"
+    <div id="crumb-thread" data-oauth-key="{{oauth.io-key}}"
          data-repo-user="{{repo-user/org-name}}" data-repo-name="{{repo-name}}" >
     </div>
-    <script id="gitqus-script" src="//rawgit.com/punchagan/gitqus/master/public/javascripts/main-built.js"></script>
+    <script id="crumb-script" src="//rawgit.com/punchagan/crumb/master/public/javascripts/main-built.js"></script>
 
-    <noscript>Please enable JavaScript to view the comments powered by Gitqus.</a></noscript>
+    <noscript>Please enable JavaScript to view the comments powered by Crumb.</a></noscript>
 
     ```

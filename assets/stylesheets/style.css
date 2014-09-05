@@ -25,40 +25,40 @@
 
 /* Our CSS */
 
-.gq-profiles {
+.crumb-profiles {
     float: left;
     width: 45px;
     margin-right: 10px;
 }
 
-.gq-comment {
+.crumb-comment {
     margin: 10px;
 }
 
-.gq-user {
+.crumb-user {
     margin-right: 10px;
 }
 
-#gitqus_thread {
+#crumb-thread {
     width: 96%;
     margin-left: 2%;
     margin-right: 2%;
 }
 
-#gq-login {
+#crumb-login {
     float: right;
 }
 
-#gq-messages {
+#crumb-messages {
     width: 90%;
 }
 
-#gq-new-comment {
+#crumb-new-comment {
     height: 120px;
     width: 90%
 }
 
-#gq-comment-button {
+#crumb-comment-button {
     margin-right: 10%;
     float: right;
 }
