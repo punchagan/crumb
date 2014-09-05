@@ -20,7 +20,7 @@ authentication on Github from Javascript.
 
     ```html
 
-    <div id="gitqus_thread" data-oauth-key="{{oauth.io-key}}"
+    <div id="gitqus-thread" data-oauth-key="{{oauth.io-key}}"
          data-repo-user="{{repo-user/org-name}}" data-repo-name="{{repo-name}}" >
     </div>
     <script id="gitqus-script" src="//rawgit.com/punchagan/gitqus/master/public/javascripts/main-built.js"></script>
