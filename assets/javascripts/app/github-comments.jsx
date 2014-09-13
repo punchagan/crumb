@@ -1,7 +1,20 @@
 /** @jsx React.DOM */
-define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
+define(["react", "octokit", "oauth", "marked"], function(React, Octokit, OAuth, Marked) {
 
     var thread_id = 'crumb-thread';
+
+    /* Setup Marked */
+    Marked.setOptions({
+        renderer: new Marked.Renderer(),
+        gfm: true,
+        tables: true,
+        breaks: false,
+        pedantic: false,
+        sanitize: true,
+        smartLists: true,
+        smartypants: false
+    });
+
 
     /* OAuth doesn't work as correctly, with require... */
     OAuth = OAuth || window.OAuth;
@@ -31,7 +44,7 @@ define(["react", "octokit", "oauth"], function(React, Octokit, OAuth) {
                 <a href={comment.html_url} target="_blank">{comment.created_at}</a>
                 </span>
 
-                <p> {comment.body} </p>
+                <div dangerouslySetInnerHTML={{__html: Marked(comment.body) }} />
 
                 </div>
             );

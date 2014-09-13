@@ -7,6 +7,7 @@ requirejs.config({
   paths: {
     oauth: "vendor/oauth/index",
     octokit: "vendor/octokit/index",
-    react: "vendor/react/react"
+    react: "vendor/react/react",
+    marked: "vendor/marked/marked"
   }
 });
