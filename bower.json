@@ -5,6 +5,7 @@
     "oauth": "https://raw.githubusercontent.com/oauth-io/oauth-js/0.2.4/dist/oauth.min.js",
     "octokit": "https://raw.githubusercontent.com/punchagan/github/issues/octokit.js",
     "requirejs": "2.1.8",
-    "react": "~0.11.1"
+    "react": "~0.11.1",
+    "marked": "~0.3.2"
   }
 }
